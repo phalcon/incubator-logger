@@ -1,0 +1,70 @@
+{
+    "name": "phalcon/incubator-session",
+    "description": "Phalcon Incubator Logger Adapters and Formatters",
+    "keywords": [
+        "framework",
+        "phalcon",
+        "incubator",
+        "logger",
+        "log formatter",
+        "monolog",
+        "aws",
+        "psr-3"
+    ],
+    "homepage": "https://phalcon.io",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Phalcon Team",
+            "email": "team@phalcon.io",
+            "homepage": "https://phalcon.io/en/team"
+        },
+        {
+            "name": "Contributors",
+            "homepage": "https://github.com/phalcon/incubator-logger/graphs/contributors"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/phalcon/incubator/issues",
+        "source": "https://github.com/phalcon/incubator-logger",
+        "forum": "https://forum.phalcon.io"
+    },
+    "require": {
+        "php": ">=7.2",
+        "ext-phalcon": "^4.0"
+    },
+    "require-dev": {
+        "phalcon/ide-stubs": "^4.0",
+        "vimeo/psalm": "^3.6",
+        "squizlabs/php_codesniffer": "^3.5",
+        "codeception/codeception": "^4.1",
+        "codeception/module-asserts": "^1.0.0",
+        "phpstan/phpstan": "^0.12.18"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phalcon\\Incubator\\Logger\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Phalcon\\Incubator\\Logger\\Tests\\Unit\\": "tests/unit/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "archive": {
+        "exclude": [
+            "/.github",
+            "/tests",
+            ".codacy.yml",
+            ".codecov.yml",
+            "CHANGELOG.md",
+            "codeception.yml",
+            "phpcs.xml.dist",
+            "phpstan.neon.dist",
+            "phpunit.xml.dist",
+            "psalm.xml.dist"
+        ]
+    }
+}
