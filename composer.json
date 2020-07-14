@@ -1,5 +1,5 @@
 {
-    "name": "phalcon/incubator-session",
+    "name": "phalcon/incubator-logger",
     "description": "Phalcon Incubator Logger Adapters and Formatters",
     "keywords": [
         "framework",
