@@ -1,166 +1,81 @@
 <?php
 
-/*
-  +------------------------------------------------------------------------+
-  | Phalcon Framework                                                      |
-  +------------------------------------------------------------------------+
-  | Copyright (c) 2011-2016 Phalcon Team (https://www.phalconphp.com)      |
-  +------------------------------------------------------------------------+
-  | This source file is subject to the New BSD License that is bundled     |
-  | with this package in the file LICENSE.txt.                             |
-  |                                                                        |
-  | If you did not receive a copy of the license and are unable to         |
-  | obtain it through the world-wide-web, please send an email             |
-  | to license@phalconphp.com so we can send you a copy immediately.       |
-  +------------------------------------------------------------------------+
-  | Authors: Andres Gutierrez <andres@phalconphp.com>                      |
-  +------------------------------------------------------------------------+
-*/
+/**
+ * This file is part of the Phalcon Framework.
+ *
+ * (c) Phalcon Team <team@phalcon.io>
+ *
+ * For the full copyright and license information, please view the LICENSE.txt
+ * file that was distributed with this source code.
+ */
 
-namespace Phalcon\Logger\Adapter;
+declare(strict_types=1);
 
+namespace Phalcon\Incubator\Logger\Adapter;
+
+use Phalcon\Db\Adapter\Pdo\AbstractPdo;
 use Phalcon\Db\Column;
-use Phalcon\Logger\Exception;
-use Phalcon\Logger\Formatter\Line as LineFormatter;
-use Phalcon\Logger\Adapter as LoggerAdapter;
-use Phalcon\Logger\AdapterInterface;
-use Phalcon\Db\AdapterInterface as DbAdapterInterface;
+use Phalcon\Logger\Adapter\AbstractAdapter;
+use Phalcon\Logger\Adapter\AdapterInterface;
+use Phalcon\Logger\Item;
 
 /**
  * Database Logger
  *
  * Adapter to store logs in a database table
- *
- * @package Phalcon\Logger\Adapter
  */
-class Database extends LoggerAdapter implements AdapterInterface
+class Database extends AbstractAdapter
 {
     /**
      * Name
      * @var string
      */
-    protected $name = 'phalcon';
+    protected $name;
 
     /**
-     * Adapter options
-     * @var array
-     */
-    protected $options = [];
-
-    /**
-     * @var \Phalcon\Db\AdapterInterface
+     * @var AbstractPdo
      */
     protected $db;
 
     /**
+     * @var string
+     */
+    protected $tableName;
+
+    /**
      * Class constructor.
      *
-     * @param  string $name
-     * @param  array  $options
-     * @throws \Phalcon\Logger\Exception
+     * @param string $name
+     * @param AbstractPdo $db
+     * @param string $tableName
      */
-    public function __construct($name = 'phalcon', array $options = [])
-    {
-        if (!isset($options['db'])) {
-            throw new Exception("Parameter 'db' is required");
-        }
-
-        if (!$options['db'] instanceof DbAdapterInterface) {
-            throw new Exception(
-                "Parameter 'db' must be object and implement AdapterInterface"
-            );
-        }
-
-        if (!isset($options['table'])) {
-            throw new Exception("Parameter 'table' is required");
-        }
-
-        $this->db = $options['db'];
-
-        if ($name) {
-            $this->name = $name;
-        }
-
-        $this->options = $options;
-    }
-
-    /**
-     * Sets database connection
-     *
-     * @param AdapterInterface $db
-     * @return $this
-     */
-    public function setDb(AdapterInterface $db)
+    public function __construct(string $name, AbstractPdo $db, string $tableName)
     {
         $this->db = $db;
-
-        return $this;
+        $this->name = $name;
+        $this->tableName = $tableName;
     }
 
     /**
-     * {@inheritdoc}
+     * Closes DB connection
      *
-     * @return \Phalcon\Logger\FormatterInterface
-     */
-    public function getFormatter()
-    {
-        if (!is_object($this->_formatter)) {
-            $this->_formatter = new LineFormatter('%message%');
-        }
-
-        return $this->_formatter;
-    }
-
-    /**
-     * Writes the log to the file itself
-     *
-     * @param string  $message
-     * @param integer $type
-     * @param integer $time
-     * @param array   $context
      * @return bool
      */
-    public function logInternal($message, $type, $time, $context = [])
-    {
-        return $this->db->execute(
-            'INSERT INTO ' . $this->options['table'] . ' VALUES (null, ?, ?, ?, ?)',
-            [
-                $this->name,
-                $type,
-                $this->getFormatter()->format($message, $type, $time, $context),
-                $time,
-            ],
-            [
-                Column::BIND_PARAM_STR,
-                Column::BIND_PARAM_INT,
-                Column::BIND_PARAM_STR,
-                Column::BIND_PARAM_INT,
-            ]
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return boolean
-     */
-    public function close()
+    public function close(): bool
     {
         if ($this->db->isUnderTransaction()) {
             $this->db->commit();
         }
 
-        $this->db->close();
-
-        return true;
+        return $this->db->close();
     }
 
     /**
-     * {@inheritdoc}
+     * Opens DB Transaction
      *
-     * @return $this
+     * @return AdapterInterface
      */
-    public function begin()
+    public function begin(): AdapterInterface
     {
         $this->db->begin();
 
@@ -170,9 +85,9 @@ class Database extends LoggerAdapter implements AdapterInterface
     /**
      * Commit transaction
      *
-     * @return $this
+     * @return AdapterInterface
      */
-    public function commit()
+    public function commit(): AdapterInterface
     {
         $this->db->commit();
 
@@ -183,12 +98,36 @@ class Database extends LoggerAdapter implements AdapterInterface
      * Rollback transaction
      * (happens automatically if commit never reached)
      *
-     * @return $this
+     * @return AdapterInterface
      */
-    public function rollback()
+    public function rollback(): AdapterInterface
     {
         $this->db->rollback();
 
         return $this;
+    }
+
+    /**
+     * Writes the log into DB table
+     *
+     * @param Item $item
+     */
+    public function process(Item $item): void
+    {
+        $this->db->execute(
+            'INSERT INTO ' . $this->tableName . ' VALUES (null, ?, ?, ?, ?)',
+            [
+                $this->name,
+                $item->getType(),
+                $this->getFormatter()->format($item),
+                $item->getTime(),
+            ],
+            [
+                Column::BIND_PARAM_STR,
+                Column::BIND_PARAM_INT,
+                Column::BIND_PARAM_STR,
+                Column::BIND_PARAM_INT,
+            ]
+        );
     }
 }
