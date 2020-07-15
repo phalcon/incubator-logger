@@ -44,7 +44,8 @@
         "aws/aws-sdk-php": "^3.145"
     },
     "suggest": {
-        "aws/aws-sdk-php": "Needed to run in CloudWatch Logger Adapter"
+        "aws/aws-sdk-php": "Needed to run in CloudWatch Logger Adapter",
+        "ext-sockets": "Needed to run in Udp Logger Adapter"
     },
     "autoload": {
         "psr-4": {
