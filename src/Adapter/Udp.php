@@ -40,9 +40,9 @@ class Udp extends AbstractAdapter
     protected $port;
 
     /**
-     * @var resource
+     * @var resource|null
      */
-    protected $socket;
+    protected $socket = null;
 
     /**
      * Storage for holding all messages until they are ready to be sent to server.
