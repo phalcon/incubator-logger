@@ -1,34 +1,24 @@
 <?php
 
-/*
-  +------------------------------------------------------------------------+
-  | Phalcon Framework                                                      |
-  +------------------------------------------------------------------------+
-  | Copyright (c) 2011-2016 Phalcon Team (https://www.phalconphp.com)      |
-  +------------------------------------------------------------------------+
-  | This source file is subject to the New BSD License that is bundled     |
-  | with this package in the file LICENSE.txt.                             |
-  |                                                                        |
-  | If you did not receive a copy of the license and are unable to         |
-  | obtain it through the world-wide-web, please send an email             |
-  | to license@phalconphp.com so we can send you a copy immediately.       |
-  +------------------------------------------------------------------------+
-  | Authors: Vitaliy Panait <panait.vi@gmail.com>                          |
-  +------------------------------------------------------------------------+
-*/
+/**
+ * This file is part of the Phalcon Framework.
+ *
+ * (c) Phalcon Team <team@phalcon.io>
+ *
+ * For the full copyright and license information, please view the LICENSE.txt
+ * file that was distributed with this source code.
+ */
 
-namespace Phalcon\Logger\Adapter;
+namespace Phalcon\Incubator\Logger\Adapter;
 
-use Phalcon\Logger\Exception;
-use Phalcon\Logger\Formatter\Line as LineFormatter;
-use Phalcon\Logger\Adapter as LoggerAdapter;
-use Phalcon\Logger\AdapterInterface;
+use Phalcon\Logger\Adapter\AbstractAdapter;
+use Phalcon\Logger\Adapter\AdapterInterface;
+use Phalcon\Logger\Item;
 
 /**
- * Phalcon\Logger\Adapter\Udplogger
  * Sends messages using UDP protocol to external server
  */
-class Udplogger extends LoggerAdapter implements AdapterInterface
+class Udplogger extends AbstractAdapter
 {
     /**
      * Name
@@ -38,11 +28,16 @@ class Udplogger extends LoggerAdapter implements AdapterInterface
     protected $name = 'phalcon';
 
     /**
-     * Adapter options
+     * IP address of the remote host.
      *
-     * @var array
+     * @var string
      */
-    protected $options = [];
+    protected $host;
+
+    /**
+     * @var int
+     */
+    protected $port;
 
     /**
      * @var resource
@@ -67,65 +62,32 @@ class Udplogger extends LoggerAdapter implements AdapterInterface
      * Class constructor.
      *
      * @param string $name
-     * @param array  $options
-     * @throws \Phalcon\Logger\Exception
+     * @param string $host
+     * @param int $port
      */
-    public function __construct($name = 'phalcon', array $options = [])
+    public function __construct(string $name, string $host, int $port)
     {
-        if (!isset($options['url'])) {
-            throw new Exception("Parameter 'url' is required");
-        }
+        $this->name = $name;
+        $this->host = $host;
+        $this->port = $port;
 
-        if (!isset($options['port'])) {
-            throw new Exception("Parameter 'port' is required");
-        }
-
-        if ($name) {
-            $this->name = $name;
-        }
-
-        $this->options = $options;
-
-        register_shutdown_function(
-            [
-                $this,
-                'commit',
-            ]
-        );
-
-        register_shutdown_function(
-            [
-                $this,
-                'close',
-            ]
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return \Phalcon\Logger\FormatterInterface
-     */
-    public function getFormatter()
-    {
-        if (!$this->_formatter) {
-            $this->_formatter = new LineFormatter();
-        }
-
-        return $this->_formatter;
+        register_shutdown_function([$this, 'commit']);
+        register_shutdown_function([$this, 'close']);
     }
 
     /**
      * Writes the log.
      *
-     * @param string  $message
-     * @param integer $type
-     * @param integer $time
-     * @param array   $context
+     * @param Item $item
      */
-    public function logInternal($message, $type, $time, $context = [])
+    public function process(Item $item): void
     {
-        $this->logs[] = compact('message', 'type', 'time', 'context');
+        $this->logs[] = [
+            'message' => $item->getMessage(),
+            'type' => $item->getType(),
+            'time' => $item->getTime(),
+            'context' => $item->getContext(),
+        ];
 
         if (!$this->isTransaction) {
             $this->send();
@@ -133,11 +95,9 @@ class Udplogger extends LoggerAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc}
-     *
-     * @return boolean
+     * @return bool
      */
-    public function close()
+    public function close(): bool
     {
         if ($this->socket !== null) {
             socket_close($this->socket);
@@ -147,35 +107,37 @@ class Udplogger extends LoggerAdapter implements AdapterInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @return AdapterInterface
      */
-    public function begin()
+    public function begin(): AdapterInterface
     {
         $this->commit();
-
         $this->isTransaction = true;
+
+        return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @return AdapterInterface
      */
-    public function commit()
+    public function commit(): AdapterInterface
     {
         if (!$this->isTransaction || empty($this->logs)) {
             $this->isTransaction = false;
-
-            return;
+        } else {
+            $this->send();
+            $this->isTransaction = false;
         }
 
-        $this->send();
-
-        $this->isTransaction = false;
+        return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * Send logs via Socket
+     *
+     * @return void
      */
-    protected function send()
+    protected function send(): void
     {
         if (empty($this->logs)) {
             return;
@@ -192,8 +154,8 @@ class Udplogger extends LoggerAdapter implements AdapterInterface
             $message,
             strlen($message),
             0,
-            $this->options['url'],
-            $this->options['port']
+            $this->host,
+            $this->port
         );
 
         $this->logs = [];
