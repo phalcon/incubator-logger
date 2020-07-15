@@ -18,7 +18,7 @@ use Phalcon\Logger\Item;
 /**
  * Sends messages using UDP protocol to external server
  */
-class Udplogger extends AbstractAdapter
+class Udp extends AbstractAdapter
 {
     /**
      * Name
