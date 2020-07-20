@@ -47,20 +47,15 @@ CREATE TABLE `logs` (
 Adapter to send messages by UDP protocol to external server
 
 ```php
-use Phalcon\Logger\Adapter\Udplogger as UdpLogger;
+use Phalcon\Incubator\Logger\Adapter\Udp as UdpLogger;
 
 $di->set(
     'logger',
     function () {
-        $logger = new UdpLogger(
-            'errors',
-            [
-                'url'  => $url,
-                'port' => $port,
-            ]
-        );
+        $host = '192.168.1.2';
+        $port = 65000;
 
-        return $logger;
+        return new UdpLogger('errors', $host, $port);
     }
 );
 ```
