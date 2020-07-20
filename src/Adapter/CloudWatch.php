@@ -15,6 +15,7 @@ namespace Phalcon\Incubator\Logger\Adapter;
 
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Phalcon\Logger\Adapter\AbstractAdapter;
+use Phalcon\Logger\Adapter\AdapterInterface;
 use Phalcon\Logger\Item;
 
 /**
@@ -43,13 +44,11 @@ class CloudWatch extends AbstractAdapter
      * @param CloudWatchLogsClient $client
      * @param string $groupName
      * @param string $instanceName
-     * @param int $retentionDays
      */
     public function __construct(
         CloudWatchLogsClient $client,
         string $groupName,
-        string $instanceName,
-        int $retentionDays = 14
+        string $instanceName
     ) {
         $this->client = $client;
         $this->groupName = $groupName;
@@ -57,6 +56,8 @@ class CloudWatch extends AbstractAdapter
     }
 
     /**
+     * Processes the message in the adapter
+     *
      * @param Item $item
      */
     public function process(Item $item)
@@ -71,6 +72,30 @@ class CloudWatch extends AbstractAdapter
         ]);
     }
 
+    /**
+     * Commits the internal transaction
+     *
+     * @return AdapterInterface
+     */
+    public function commit(): AdapterInterface
+    {
+        $this->client->putLogEvents([
+            'logGroupName' => $this->groupName,
+            'logStreamName' => $this->instanceName,
+            'logEvents' => $this->queue,
+        ]);
+
+        $this->queue = [];
+        $this->inTransaction = false;
+
+        return $this;
+    }
+
+    /**
+     * Closes the logger
+     *
+     * @return bool
+     */
     public function close(): bool
     {
         return true;
