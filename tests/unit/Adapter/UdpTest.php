@@ -14,14 +14,14 @@ declare(strict_types=1);
 namespace Phalcon\Incubator\Logger\Tests\Unit\Adapter;
 
 use Codeception\Test\Unit;
-use Phalcon\Incubator\Logger\Adapter\Database;
+use Phalcon\Incubator\Logger\Adapter\Udp;
 use Phalcon\Logger\Adapter\AbstractAdapter;
 
-final class DatabaseTest extends Unit
+final class UdpTest extends Unit
 {
     public function testImplementation(): void
     {
-        $class = $this->createMock(Database::class);
+        $class = $this->createMock(Udp::class);
 
         $this->assertInstanceOf(AbstractAdapter::class, $class);
     }
