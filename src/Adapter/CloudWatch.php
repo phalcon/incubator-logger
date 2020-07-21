@@ -60,7 +60,7 @@ class CloudWatch extends AbstractAdapter
      *
      * @param Item $item
      */
-    public function process(Item $item)
+    public function process(Item $item): void
     {
         $this->client->putLogEvents([
             'logGroupName' => $this->groupName,
