@@ -29,30 +29,34 @@ class CloudWatch extends AbstractAdapter
     protected $client;
 
     /**
+     * Some kind of "folder" inside CloudWatch
+     *
      * @var string
      */
     protected $groupName;
 
     /**
+     * Some kind of "file" inside CloudWatch
+     *
      * @var string
      */
-    protected $instanceName;
+    protected $streamName;
 
     /**
      * CloudWatch constructor.
      *
      * @param CloudWatchLogsClient $client
      * @param string $groupName
-     * @param string $instanceName
+     * @param string $streamName
      */
     public function __construct(
         CloudWatchLogsClient $client,
         string $groupName,
-        string $instanceName
+        string $streamName
     ) {
         $this->client = $client;
         $this->groupName = $groupName;
-        $this->instanceName = $instanceName;
+        $this->streamName = $streamName;
     }
 
     /**
@@ -64,7 +68,7 @@ class CloudWatch extends AbstractAdapter
     {
         $this->client->putLogEvents([
             'logGroupName' => $this->groupName,
-            'logStreamName' => $this->instanceName,
+            'logStreamName' => $this->streamName,
             'logEvents' => [
                 'message' => $item->getMessage(),
                 'timestamp' => $item->getTime(),
@@ -81,7 +85,7 @@ class CloudWatch extends AbstractAdapter
     {
         $this->client->putLogEvents([
             'logGroupName' => $this->groupName,
-            'logStreamName' => $this->instanceName,
+            'logStreamName' => $this->streamName,
             'logEvents' => $this->queue,
         ]);
 
