@@ -2,6 +2,39 @@
 
 Usage examples of the adapters available here:
 
+## Amazon CloudWatch
+
+Adapter to store logs in AWS ClodWatch:
+
+Note: group name and stream name must be created before call any logs.
+You can make it inside AWS console. 
+
+```php
+use Aws\CloudWatchLogs\CloudWatchLogsClient;
+use Phalcon\Incubator\Logger\Adapter\CloudWatch;
+use Phalcon\Logger;
+
+$di->set(
+    'logger',
+    function () {
+        $client = new CloudWatchLogsClient([
+            'credentials' => [
+                'key' => 'AMAZON_CLOUDWATCH_KEY',
+                'secret' => 'AMAZON_CLOUDWATCH_SECRET',
+            ],
+            'region' => 'AMAZON_CLOUDWATCH_REGION',
+            'version' => 'latest', // Or any specific
+        ]);
+
+        $adapter = new CloudWatch($client, '/group/name', 'stream-name');
+
+        return new Logger('messages', [
+            'main' => $adapter,
+        ]);
+    }
+);
+```
+
 ## Database
 
 Adapter to store logs in a database table:
