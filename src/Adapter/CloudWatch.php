@@ -70,8 +70,10 @@ class CloudWatch extends AbstractAdapter
             'logGroupName' => $this->groupName,
             'logStreamName' => $this->streamName,
             'logEvents' => [
-                'message' => $item->getMessage(),
-                'timestamp' => $item->getTime(),
+                [
+                    'message' => $item->getMessage(),
+                    'timestamp' => $item->getTime(),
+                ],
             ],
         ]);
     }
