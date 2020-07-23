@@ -43,6 +43,13 @@ class CloudWatch extends AbstractAdapter
     protected $streamName;
 
     /**
+     * CloudWatch requires sequence token to add new logs with order.
+     *
+     * @var string|null
+     */
+    private $sequenceToken = null;
+
+    /**
      * CloudWatch constructor.
      *
      * @param CloudWatchLogsClient $client
@@ -57,6 +64,8 @@ class CloudWatch extends AbstractAdapter
         $this->client = $client;
         $this->groupName = $groupName;
         $this->streamName = $streamName;
+
+        $this->retrieveSequenceToken();
     }
 
     /**
@@ -66,7 +75,7 @@ class CloudWatch extends AbstractAdapter
      */
     public function process(Item $item): void
     {
-        $this->client->putLogEvents([
+        $args = [
             'logGroupName' => $this->groupName,
             'logStreamName' => $this->streamName,
             'logEvents' => [
@@ -75,7 +84,14 @@ class CloudWatch extends AbstractAdapter
                     'timestamp' => $item->getTime(),
                 ],
             ],
-        ]);
+        ];
+
+        if ($this->sequenceToken !== null) {
+            $args['sequenceToken'] = $this->sequenceToken;
+        }
+
+        $response = $this->client->putLogEvents($args);
+        $this->sequenceToken = $response->get('nextSequenceToken');
     }
 
     /**
@@ -85,14 +101,21 @@ class CloudWatch extends AbstractAdapter
      */
     public function commit(): AdapterInterface
     {
-        $this->client->putLogEvents([
+        $args = [
             'logGroupName' => $this->groupName,
             'logStreamName' => $this->streamName,
             'logEvents' => $this->queue,
-        ]);
+        ];
+
+        if ($this->sequenceToken !== null) {
+            $args['sequenceToken'] = $this->sequenceToken;
+        }
+
+        $response = $this->client->putLogEvents($args);
 
         $this->queue = [];
         $this->inTransaction = false;
+        $this->sequenceToken = $response->get('nextSequenceToken');
 
         return $this;
     }
@@ -105,5 +128,25 @@ class CloudWatch extends AbstractAdapter
     public function close(): bool
     {
         return true;
+    }
+
+    /**
+     * Find latest sequence token
+     */
+    private function retrieveSequenceToken(): void
+    {
+        $streams = $this->client->describeLogStreams([
+            'logGroupName' => $this->groupName,
+            'logStreamNamePrefix' => $this->streamName,
+        ])->get('logStreams');
+
+        /**
+         * Set sequence token
+         */
+        foreach ($streams as $stream) {
+            if ($stream['logStreamName'] === $this->streamName && isset($stream['uploadSequenceToken'])) {
+                $this->sequenceToken = $stream['uploadSequenceToken'];
+            }
+        }
     }
 }
