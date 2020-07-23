@@ -81,7 +81,7 @@ class CloudWatch extends AbstractAdapter
             'logEvents' => [
                 [
                     'message' => $item->getMessage(),
-                    'timestamp' => $item->getTime(),
+                    'timestamp' => $item->getTime() * 1000,
                 ],
             ],
         ];
