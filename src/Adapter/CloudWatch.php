@@ -135,6 +135,7 @@ class CloudWatch extends AbstractAdapter
      */
     private function retrieveSequenceToken(): void
     {
+        /** @var array $streams */
         $streams = $this->client->describeLogStreams([
             'logGroupName' => $this->groupName,
             'logStreamNamePrefix' => $this->streamName,
