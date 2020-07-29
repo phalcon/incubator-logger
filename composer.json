@@ -41,7 +41,8 @@
         "codeception/codeception": "^4.1",
         "codeception/module-asserts": "^1.0.0",
         "phpstan/phpstan": "^0.12.18",
-        "aws/aws-sdk-php": "^3.145"
+        "aws/aws-sdk-php": "^3.145",
+        "codeception/module-db": "^1.0"
     },
     "suggest": {
         "aws/aws-sdk-php": "Needed to run in CloudWatch Logger Adapter",
