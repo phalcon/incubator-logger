@@ -65,7 +65,7 @@ $di->set(
 The following table used to store the logs:
 
 ```sql
-CREATE TABLE `logs` (
+CREATE TABLE IF NOT EXISTS `logs` (
   `id` INT(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(32) DEFAULT NULL,
   `type` INT(3) NOT NULL,
