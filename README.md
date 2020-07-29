@@ -57,7 +57,7 @@ $di->set(
 
         $logsName = 'errors';
         $tableName = 'logs';
-        return new DbLogger($logsName, $connection, $tableName);
+        return new DbLogger($connection, $logsName, $tableName);
     }
 );
 ```
