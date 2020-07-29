@@ -36,7 +36,7 @@ final class DatabaseCest
 
         $sql = <<<SQL
 CREATE TABLE IF NOT EXISTS `logs` (
-  `id` INT PRIMARY KEY AUTOINCREMENT,
+  `id` INT,
   `name` VARCHAR(32) DEFAULT NULL,
   `type` INT NOT NULL,
   `content` text,
