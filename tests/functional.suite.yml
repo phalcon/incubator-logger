@@ -9,6 +9,5 @@ actor: FunctionalTester
 modules:
     enabled:
         - Asserts
-        -
         - \Helper\Functional
     step_decorators: ~        
