@@ -50,16 +50,9 @@ SQL;
 
     public function construct(FunctionalTester $I): void
     {
-        $class = new Database('test', $this->connection, 'logs');
+        $class = new Database($this->connection, 'test', 'logs');
 
         $I->assertInstanceOf(AbstractAdapter::class, $class);
-    }
-
-    public function closeWithoutTransaction(FunctionalTester $I): void
-    {
-        $class = new Database('test', $this->connection, 'logs');
-
-        $I->assertTrue($class->close());
     }
 
     public function insertLog(FunctionalTester $I): void
@@ -68,21 +61,22 @@ SQL;
 
         $message = 'Insert log';
 
-        $class = new Database('test', $this->connection, 'logs');
+        $class = new Database($this->connection, 'test', 'logs');
         $logger = new Logger('test', [
             'main' => $class,
         ]);
         $logger->info($message);
-        $row = $this->connection->fetchOne('SELECT content FROM logs WHERE content = "' . $message . '"');
 
-        $I->assertTrue($message, $row['content']);
+        $row = $this->connection->fetchOne('SELECT content FROM logs');
+
+        $I->assertContains($message, $row['content']);
     }
 
     public function insertTransactionLogs(FunctionalTester $I): void
     {
         $this->connection->execute('DELETE FROM logs');
 
-        $class = new Database('test', $this->connection, 'logs');
+        $class = new Database($this->connection, 'test', 'logs');
         $logger = new Logger('test', [
             'main' => $class,
         ]);
@@ -95,6 +89,6 @@ SQL;
 
         $row = $this->connection->fetchOne('SELECT COUNT(*) as total FROM logs');
 
-        $I->assertSame(3, $row['total']);
+        $I->assertSame(3, (int)$row['total']);
     }
 }

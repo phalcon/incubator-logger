@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Phalcon\Incubator\Logger\Adapter;
 
-use Phalcon\Db\Adapter\Pdo\AbstractPdo;
+use Phalcon\Db\Adapter\AbstractAdapter as DbAbstractAdapter;
 use Phalcon\Db\Column;
 use Phalcon\Logger\Adapter\AbstractAdapter;
 use Phalcon\Logger\Adapter\AdapterInterface;
@@ -27,15 +27,14 @@ use Phalcon\Logger\Item;
 class Database extends AbstractAdapter
 {
     /**
-     * Name
+     * @var DbAbstractAdapter
+     */
+    protected $db;
+
+    /**
      * @var string
      */
     protected $name;
-
-    /**
-     * @var AbstractPdo
-     */
-    protected $db;
 
     /**
      * @var string
@@ -46,10 +45,10 @@ class Database extends AbstractAdapter
      * Class constructor.
      *
      * @param string $name
-     * @param AbstractPdo $db
+     * @param DbAbstractAdapter $db
      * @param string $tableName
      */
-    public function __construct(string $name, AbstractPdo $db, string $tableName)
+    public function __construct(DbAbstractAdapter $db, string $name, string $tableName)
     {
         $this->db = $db;
         $this->name = $name;
@@ -59,15 +58,13 @@ class Database extends AbstractAdapter
     /**
      * Closes DB connection
      *
+     * Do nothing, DB connection close can't be done here.
+     *
      * @return bool
      */
     public function close(): bool
     {
-        if ($this->db->isUnderTransaction()) {
-            $this->db->commit();
-        }
-
-        return $this->db->close();
+        return true;
     }
 
     /**
