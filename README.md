@@ -1,6 +1,12 @@
 # Phalcon\Incubator\Logger
 
-Usage examples of the adapters available here:
+Extra Adapters for Phalcon Logger component.
+
+## Installation
+
+```
+composer require phalcon/incubator-logger
+```
 
 ## Amazon CloudWatch
 
