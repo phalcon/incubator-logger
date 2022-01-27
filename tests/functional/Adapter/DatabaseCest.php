@@ -16,7 +16,7 @@ namespace Phalcon\Incubator\Logger\Tests\Functional\Adapter;
 use FunctionalTester;
 use Phalcon\Db\Adapter\Pdo\Sqlite;
 use Phalcon\Incubator\Logger\Adapter\Database;
-use Phalcon\Logger;
+use Phalcon\Logger\Logger;
 use Phalcon\Logger\Adapter\AbstractAdapter;
 
 final class DatabaseCest

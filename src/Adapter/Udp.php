@@ -27,38 +27,38 @@ class Udp extends AbstractAdapter
      *
      * @var string
      */
-    protected $name = 'phalcon';
+    protected string $name = 'phalcon';
 
     /**
      * IP address of the remote host.
      *
      * @var string
      */
-    protected $host;
+    protected string $host;
 
     /**
      * @var int
      */
-    protected $port;
+    protected int $port;
 
     /**
      * @var resource|null
      */
-    protected $socket = null;
+    protected ?Resource $socket = null;
 
     /**
      * Storage for holding all messages until they are ready to be sent to server.
      *
      * @var array
      */
-    protected $logs = [];
+    protected array $logs = [];
 
     /**
      * Flag for the transaction
      *
-     * @var boolean
+     * @var bool
      */
-    protected $isTransaction = false;
+    protected bool $isTransaction = false;
 
     /**
      * Class constructor.
@@ -81,6 +81,7 @@ class Udp extends AbstractAdapter
      * Writes the log.
      *
      * @param Item $item
+     * @return void
      */
     public function process(Item $item): void
     {

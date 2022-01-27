@@ -33,21 +33,21 @@ class CloudWatch extends AbstractAdapter
      *
      * @var string
      */
-    protected $groupName;
+    protected string $groupName;
 
     /**
      * Some kind of "file" inside CloudWatch
      *
      * @var string
      */
-    protected $streamName;
+    protected string $streamName;
 
     /**
      * CloudWatch requires sequence token to add new logs with order.
      *
      * @var string|null
      */
-    private $sequenceToken = null;
+    private ?string $sequenceToken = null;
 
     /**
      * CloudWatch constructor.
@@ -72,6 +72,7 @@ class CloudWatch extends AbstractAdapter
      * Processes the message in the adapter
      *
      * @param Item $item
+     * @return void
      */
     public function process(Item $item): void
     {

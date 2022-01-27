@@ -17,7 +17,7 @@ use Phalcon\Db\Adapter\AbstractAdapter as DbAbstractAdapter;
 use Phalcon\Db\Column;
 use Phalcon\Logger\Adapter\AbstractAdapter;
 use Phalcon\Logger\Adapter\AdapterInterface;
-use Phalcon\Logger\Item;
+use Phalcon\Logger\Logger\Item;
 
 /**
  * Database Logger
@@ -29,17 +29,17 @@ class Database extends AbstractAdapter
     /**
      * @var DbAbstractAdapter
      */
-    protected $db;
+    protected DbAbstractAdapter $db;
 
     /**
      * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * @var string
      */
-    protected $tableName;
+    protected string $tableName;
 
     /**
      * Class constructor.
@@ -108,6 +108,7 @@ class Database extends AbstractAdapter
      * Writes the log into DB table
      *
      * @param Item $item
+     * @return void
      */
     public function process(Item $item): void
     {
