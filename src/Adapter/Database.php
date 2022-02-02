@@ -17,7 +17,7 @@ use Phalcon\Db\Adapter\AbstractAdapter as DbAbstractAdapter;
 use Phalcon\Db\Column;
 use Phalcon\Logger\Adapter\AbstractAdapter;
 use Phalcon\Logger\Adapter\AdapterInterface;
-use Phalcon\Logger\Logger\Item;
+use Phalcon\Logger\Item;
 
 /**
  * Database Logger
@@ -116,9 +116,9 @@ class Database extends AbstractAdapter
             'INSERT INTO ' . $this->tableName . ' VALUES (null, ?, ?, ?, ?)',
             [
                 $this->name,
-                $item->getType(),
+                $item->getLevel(),
                 $this->getFormatter()->format($item),
-                $item->getTime(),
+                $item->getDateTime(),
             ],
             [
                 Column::BIND_PARAM_STR,

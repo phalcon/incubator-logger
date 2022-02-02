@@ -41,10 +41,7 @@ class Udp extends AbstractAdapter
      */
     protected int $port;
 
-    /**
-     * @var resource|null
-     */
-    protected ?Resource $socket = null;
+    protected $socket = null;
 
     /**
      * Storage for holding all messages until they are ready to be sent to server.
@@ -87,8 +84,8 @@ class Udp extends AbstractAdapter
     {
         $this->logs[] = [
             'message' => $item->getMessage(),
-            'type' => $item->getType(),
-            'time' => $item->getTime(),
+            'type' => $item->getLevel(),
+            'time' => $item->getDateTime(),
             'context' => $item->getContext(),
         ];
 
