@@ -18,6 +18,7 @@ use Phalcon\Db\Column;
 use Phalcon\Logger\Adapter\AbstractAdapter;
 use Phalcon\Logger\Adapter\AdapterInterface;
 use Phalcon\Logger\Item;
+use DateTimeInterface;
 
 /**
  * Database Logger
@@ -118,13 +119,13 @@ class Database extends AbstractAdapter
                 $this->name,
                 $item->getLevel(),
                 $this->getFormatter()->format($item),
-                $item->getDateTime(),
+                $item->getDateTime()->format(DateTimeInterface::W3C),
             ],
             [
                 Column::BIND_PARAM_STR,
                 Column::BIND_PARAM_INT,
                 Column::BIND_PARAM_STR,
-                Column::BIND_PARAM_INT,
+                Column::BIND_PARAM_STR,
             ]
         );
     }

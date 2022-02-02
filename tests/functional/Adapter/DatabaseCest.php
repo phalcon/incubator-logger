@@ -18,6 +18,8 @@ use Phalcon\Db\Adapter\Pdo\Sqlite;
 use Phalcon\Incubator\Logger\Adapter\Database;
 use Phalcon\Logger\Logger;
 use Phalcon\Logger\Adapter\AbstractAdapter;
+use DateTimeInterface;
+use DateTimeImmutable;
 
 final class DatabaseCest
 {
@@ -35,15 +37,15 @@ final class DatabaseCest
         ]);
 
         $sql = <<<SQL
-CREATE TABLE IF NOT EXISTS `logs` (
-  `id` INT,
-  `name` VARCHAR(32) DEFAULT NULL,
-  `type` INT NOT NULL,
-  `content` text,
-  `created_at` INT NOT NULL,
-  PRIMARY KEY (`id`)
-);
-SQL;
+            CREATE TABLE IF NOT EXISTS `logs` (
+            `id` INT,
+            `name` VARCHAR(32) DEFAULT NULL,
+            `type` INT NOT NULL,
+            `content` text,
+            `created_at` INT NOT NULL,
+            PRIMARY KEY (`id`)
+            );
+        SQL;
 
         $this->connection->execute($sql);
     }
@@ -59,9 +61,11 @@ SQL;
     {
         $this->connection->execute('DELETE FROM logs');
 
+        $dateTime = new DateTimeImmutable();
         $message = 'Insert log';
 
         $class = new Database($this->connection, 'test', 'logs');
+
         $logger = new Logger('test', [
             'main' => $class,
         ]);
@@ -69,7 +73,7 @@ SQL;
 
         $row = $this->connection->fetchOne('SELECT content FROM logs');
 
-        $I->assertContains($message, $row['content']);
+        $I->assertContains('[' . $dateTime->format(DateTimeInterface::W3C) . '][INFO] ' . $message, $row);
     }
 
     public function insertTransactionLogs(FunctionalTester $I): void
