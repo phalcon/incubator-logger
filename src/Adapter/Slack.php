@@ -41,7 +41,7 @@ class Slack extends \Phalcon\Logger\Adapter\AbstractAdapter
     protected string $channel;
 
     /**
-     * Slack adapter constructor magaging to log content in a Slack channel
+     * Slack adapter constructor managing to log content in a Slack channel
      *
      * @param string $token Required token for the API
      * @param string $channel Channel name to write the message
@@ -64,13 +64,14 @@ class Slack extends \Phalcon\Logger\Adapter\AbstractAdapter
     public function process(Item $item): void
     {
         curl_setopt_array($this->curl, [
-            CURLOPT_POSTFIELDS => [
-                'token'   => $this->token,
-                'channel' => $this->channel,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POSTFIELDS     => [
+                'token'       => $this->token,
+                'channel'     => $this->channel,
                 'attachments' => json_encode([[
-                    'title'     => 'Message | ' . $item->getLevelName(),
-                    'text'      => $item->getMessage(),
-                    'color'     => $this->levelToColor($item->getLevel())
+                    'title' => 'Message | ' . $item->getLevelName(),
+                    'text'  => $item->getMessage(),
+                    'color' => $this->levelToColor($item->getLevel())
                 ]])
             ]
         ]);
