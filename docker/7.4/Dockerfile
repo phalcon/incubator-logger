@@ -17,7 +17,8 @@ RUN apt update -y && \
     zip
 
 # Installing PHP Extensions
-RUN pecl install phalcon-${PHALCON_VERSION}
+RUN pecl install phalcon-${PHALCON_VERSION} \
+    xdebug
 
 # Enabling PHP Extensions
 RUN docker-php-ext-enable \
