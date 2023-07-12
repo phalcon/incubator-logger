@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Phalcon\Incubator\Logger\Adapter;
 
 use Phalcon\Logger\Adapter\AbstractAdapter;
-use Phalcon\Logger\Adapter\AdapterInterface;
 use Phalcon\Logger\Item;
 
 /**
@@ -24,22 +23,15 @@ class Udp extends AbstractAdapter
 {
     /**
      * Name
-     *
-     * @var string
      */
-    protected $name = 'phalcon';
+    protected string $name = 'phalcon';
 
     /**
      * IP address of the remote host.
-     *
-     * @var string
      */
-    protected $host;
+    protected string $host;
 
-    /**
-     * @var int
-     */
-    protected $port;
+    protected int $port;
 
     /**
      * @var resource|false
@@ -48,17 +40,8 @@ class Udp extends AbstractAdapter
 
     /**
      * Storage for holding all messages until they are ready to be sent to server.
-     *
-     * @var array
      */
-    protected $logs = [];
-
-    /**
-     * Flag for the transaction
-     *
-     * @var boolean
-     */
-    protected $isTransaction = false;
+    protected array $logs = [];
 
     /**
      * Class constructor.
@@ -79,26 +62,21 @@ class Udp extends AbstractAdapter
 
     /**
      * Writes the log.
-     *
-     * @param Item $item
      */
     public function process(Item $item): void
     {
         $this->logs[] = [
             'message' => $item->getMessage(),
-            'type' => $item->getLevelName(),
-            'time' => $item->getDateTime()->getTimestamp(),
-            'context' => $item->getContext(),
+            'type'    => $item->getLevelName(),
+            'time'    => $item->getDateTime()->getTimestamp(),
+            'context' => $item->getContext()
         ];
 
-        if (!$this->isTransaction) {
+        if (!$this->inTransaction) {
             $this->send();
         }
     }
 
-    /**
-     * @return bool
-     */
     public function close(): bool
     {
         if ($this->socket) {
@@ -108,27 +86,21 @@ class Udp extends AbstractAdapter
         return true;
     }
 
-    /**
-     * @return AdapterInterface
-     */
-    public function begin(): AdapterInterface
+    public function begin(): self
     {
         $this->commit();
-        $this->isTransaction = true;
+        $this->inTransaction = true;
 
         return $this;
     }
 
-    /**
-     * @return AdapterInterface
-     */
-    public function commit(): AdapterInterface
+    public function commit(): self
     {
-        if (!$this->isTransaction || empty($this->logs)) {
-            $this->isTransaction = false;
+        if (!$this->inTransaction || empty($this->logs)) {
+            $this->inTransaction = false;
         } else {
             $this->send();
-            $this->isTransaction = false;
+            $this->inTransaction = false;
         }
 
         return $this;
@@ -136,8 +108,6 @@ class Udp extends AbstractAdapter
 
     /**
      * Send logs via Socket
-     *
-     * @return void
      */
     protected function send(): void
     {
