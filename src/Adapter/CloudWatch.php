@@ -76,9 +76,6 @@ class CloudWatch extends AbstractAdapter
     public function process(Item $item): void
     {
         $formatterMessage = $this->getFormatter()->format($item);
-        if (is_array($formatterMessage)) {
-            $formatterMessage = var_export($formatterMessage, true);
-        }
 
         $args = [
             'logGroupName' => $this->groupName,
@@ -86,7 +83,7 @@ class CloudWatch extends AbstractAdapter
             'logEvents' => [
                 [
                     'message' => $formatterMessage,
-                    'timestamp' => $item->getTime() * 1000,
+                    'timestamp' => $item->getDateTime()->getTimestamp() * 1000,
                 ],
             ],
         ];

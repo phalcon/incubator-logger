@@ -16,7 +16,7 @@ namespace Phalcon\Incubator\Logger\Tests\Functional\Adapter;
 use FunctionalTester;
 use Phalcon\Db\Adapter\Pdo\Sqlite;
 use Phalcon\Incubator\Logger\Adapter\Database;
-use Phalcon\Logger;
+use Phalcon\Logger\Logger;
 use Phalcon\Logger\Adapter\AbstractAdapter;
 
 final class DatabaseCest
@@ -69,7 +69,7 @@ SQL;
 
         $row = $this->connection->fetchOne('SELECT content FROM logs');
 
-        $I->assertContains($message, $row['content']);
+        $I->assertStringContainsString($message, $row['content']);
     }
 
     public function insertTransactionLogs(FunctionalTester $I): void

@@ -115,9 +115,9 @@ class Database extends AbstractAdapter
             'INSERT INTO ' . $this->tableName . ' VALUES (null, ?, ?, ?, ?)',
             [
                 $this->name,
-                $item->getType(),
+                $item->getLevel(),
                 $this->getFormatter()->format($item),
-                $item->getTime(),
+                $item->getDateTime()->getTimestamp(),
             ],
             [
                 Column::BIND_PARAM_STR,

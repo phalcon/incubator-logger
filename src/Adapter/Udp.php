@@ -86,8 +86,8 @@ class Udp extends AbstractAdapter
     {
         $this->logs[] = [
             'message' => $item->getMessage(),
-            'type' => $item->getType(),
-            'time' => $item->getTime(),
+            'type' => $item->getLevelName(),
+            'time' => $item->getDateTime()->getTimestamp(),
             'context' => $item->getContext(),
         ];
 
