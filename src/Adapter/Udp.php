@@ -42,9 +42,9 @@ class Udp extends AbstractAdapter
     protected $port;
 
     /**
-     * @var resource|null
+     * @var resource|\Socket|false
      */
-    protected $socket = null;
+    protected $socket = false;
 
     /**
      * Storage for holding all messages until they are ready to be sent to server.
@@ -101,7 +101,7 @@ class Udp extends AbstractAdapter
      */
     public function close(): bool
     {
-        if ($this->socket !== null) {
+        if ($this->socket) {
             socket_close($this->socket);
         }
 
@@ -147,7 +147,7 @@ class Udp extends AbstractAdapter
 
         $message = json_encode($this->logs);
 
-        if ($this->socket === null) {
+        if (!$this->socket) {
             $this->socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
         }
 
