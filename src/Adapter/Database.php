@@ -16,7 +16,6 @@ namespace Phalcon\Incubator\Logger\Adapter;
 use Phalcon\Db\Adapter\AbstractAdapter as DbAbstractAdapter;
 use Phalcon\Db\Column;
 use Phalcon\Logger\Adapter\AbstractAdapter;
-use Phalcon\Logger\Adapter\AdapterInterface;
 use Phalcon\Logger\Item;
 
 /**

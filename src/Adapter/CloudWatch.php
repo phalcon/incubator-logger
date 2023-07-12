@@ -15,7 +15,6 @@ namespace Phalcon\Incubator\Logger\Adapter;
 
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Phalcon\Logger\Adapter\AbstractAdapter;
-use Phalcon\Logger\Adapter\AdapterInterface;
 use Phalcon\Logger\Item;
 
 /**
