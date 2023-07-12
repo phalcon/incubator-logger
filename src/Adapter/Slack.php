@@ -84,7 +84,9 @@ class Slack extends \Phalcon\Logger\Adapter\AbstractAdapter
      */
     public function close(): bool
     {
-        curl_close($this->curl);
+        if (gettype($this->curl) === 'resource') {
+            curl_close($this->curl);
+        }
 
         return true;
     }
