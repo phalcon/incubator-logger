@@ -21,7 +21,7 @@ use Phalcon\Logger\Adapter\AbstractAdapter;
 
 final class DatabaseCest
 {
-    private $connection;
+    private Sqlite $connection;
 
     public function __construct()
     {
@@ -30,9 +30,7 @@ final class DatabaseCest
             unlink($dbFile);
         }
 
-        $this->connection = new Sqlite([
-            'dbname' => $dbFile,
-        ]);
+        $this->connection = new Sqlite(['dbname' => $dbFile]);
 
         $sql = <<<SQL
 CREATE TABLE IF NOT EXISTS `logs` (
@@ -62,9 +60,8 @@ SQL;
         $message = 'Insert log';
 
         $class = new Database($this->connection, 'test', 'logs');
-        $logger = new Logger('test', [
-            'main' => $class,
-        ]);
+
+        $logger = new Logger('test', ['main' => $class]);
         $logger->info($message);
 
         $row = $this->connection->fetchOne('SELECT content FROM logs');
@@ -76,10 +73,8 @@ SQL;
     {
         $this->connection->execute('DELETE FROM logs');
 
-        $class = new Database($this->connection, 'test', 'logs');
-        $logger = new Logger('test', [
-            'main' => $class,
-        ]);
+        $class  = new Database($this->connection, 'test', 'logs');
+        $logger = new Logger('test', ['main' => $class]);
 
         $logger->getAdapter('main')->begin();
         $logger->error('Error message #1');
@@ -90,5 +85,23 @@ SQL;
         $row = $this->connection->fetchOne('SELECT COUNT(*) as total FROM logs');
 
         $I->assertSame(3, (int)$row['total']);
+    }
+
+    public function rollbackTransactionLogs(FunctionalTester $I): void
+    {
+        $this->connection->execute('DELETE FROM logs');
+
+        $class  = new Database($this->connection, 'test', 'logs');
+        $logger = new Logger('test', ['main' => $class]);
+
+        $logger->getAdapter('main')->begin();
+        $logger->error('Error message #1');
+        $logger->error('Error message #2');
+        $logger->getAdapter('main')->rollback();
+
+        $I->assertSame(
+            0,
+            (int) $this->connection->fetchOne('SELECT COUNT(*) as total FROM logs')['total']
+        );
     }
 }
