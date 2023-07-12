@@ -48,6 +48,11 @@
         "aws/aws-sdk-php": "Needed to run in CloudWatch Logger Adapter",
         "ext-sockets": "Needed to run in Udp Logger Adapter"
     },
+    "config": {
+        "platform": {
+            "php": "7.4"
+        }
+    },
     "autoload": {
         "psr-4": {
             "Phalcon\\Incubator\\Logger\\": "src/"
