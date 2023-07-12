@@ -42,7 +42,7 @@ class Udp extends AbstractAdapter
     protected $port;
 
     /**
-     * @var resource|\Socket|false
+     * @var resource|false
      */
     protected $socket = false;
 
@@ -147,8 +147,10 @@ class Udp extends AbstractAdapter
 
         $message = json_encode($this->logs);
 
+        $this->socket ?: socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+
         if (!$this->socket) {
-            $this->socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+            return;
         }
 
         socket_sendto(
