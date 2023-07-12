@@ -17,6 +17,7 @@ You can make it inside AWS console.
 
 ```php
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
+
 use Phalcon\Incubator\Logger\Adapter\CloudWatch;
 use Phalcon\Logger\Logger;
 
@@ -101,6 +102,8 @@ $di->set(
 ## Slack logger
 
 Adapter to write messages into a Slack channel
+
+![slack-log](https://github.com/DirectInfoService/incubator-logger/assets/78140431/98d8515e-4fac-4904-ab63-fb114ae8b54c)
 
 ```php
 $adapter = new \Phalcon\Incubator\Logger\Adapter\Slack('api-token','channel-name');
