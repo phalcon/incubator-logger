@@ -46,7 +46,8 @@
     },
     "suggest": {
         "aws/aws-sdk-php": "Needed to run in CloudWatch Logger Adapter",
-        "ext-sockets": "Needed to run in Udp Logger Adapter"
+        "ext-sockets": "Needed to run in Udp Logger Adapter",
+        "ext-curl": "Needed to run in Slack Adapter"
     },
     "config": {
         "platform": {
