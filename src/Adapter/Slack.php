@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Phalcon\Incubator\Logger\Adapter;
 
 use Phalcon\Logger\AbstractLogger;
+use Phalcon\Logger\Adapter\AbstractAdapter;
 use Phalcon\Logger\Item;
 use Phalcon\Logger\Exception;
 
@@ -24,7 +25,7 @@ use Phalcon\Logger\Exception;
  *
  * @see https://api.slack.com/methods/chat.postMessage
  */
-class Slack extends \Phalcon\Logger\Adapter\AbstractAdapter
+class Slack extends AbstractAdapter
 {
     /**
      * @var resource
@@ -47,7 +48,7 @@ class Slack extends \Phalcon\Logger\Adapter\AbstractAdapter
      * @param string $token Required token for the API
      * @param string $channel Channel name to write the message
      *
-     * @throws \Phalcon\Logger\Exception If curl_init returned false
+     * @throws Exception If curl_init returned false
      */
     public function __construct(string $token, string $channel)
     {
