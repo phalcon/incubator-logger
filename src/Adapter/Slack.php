@@ -15,6 +15,7 @@ namespace Phalcon\Incubator\Logger\Adapter;
 
 use Phalcon\Logger\AbstractLogger;
 use Phalcon\Logger\Item;
+use Phalcon\Logger\Exception;
 
 /**
  * Logger adapter to log messages into a Slack channel
@@ -50,8 +51,10 @@ class Slack extends \Phalcon\Logger\Adapter\AbstractAdapter
      */
     public function __construct(string $token, string $channel)
     {
-        if (!$this->curl = curl_init('https://slack.com/api/chat.postMessage')) {
-            throw new \Phalcon\Logger\Exception('curl_init() returned false');
+        if (!function_exists('curl_init')) {
+            throw new Exception('curl extension is not enabled');
+        } elseif (!$this->curl = curl_init('https://slack.com/api/chat.postMessage')) {
+            throw new Exception('curl_init() returned false');
         }
 
         $this->token   = $token;
