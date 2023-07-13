@@ -1,5 +1,11 @@
 # Phalcon\Incubator\Logger
 
+[![Discord](https://img.shields.io/discord/310910488152375297?label=Discord)](http://phalcon.link/discord)
+[![Packagist Version](https://img.shields.io/packagist/v/phalcon/incubator-logger)](https://packagist.org/packages/phalcon/incubator-logger)
+[![PHP from Packagist](https://img.shields.io/packagist/php-v/phalcon/incubator-logger)](https://packagist.org/packages/phalcon/incubator-logger)
+[![codecov](https://codecov.io/gh/phalcon/incubator-logger/branch/master/graph/badge.svg)](https://codecov.io/gh/phalcon/incubator-logger)
+[![Packagist](https://img.shields.io/packagist/dd/phalcon/incubator-logger)](https://packagist.org/packages/phalcon/incubator-logger/stats)
+
 Extra Adapters for Phalcon Logger component.
 
 ## Installation
