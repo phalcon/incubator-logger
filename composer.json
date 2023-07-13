@@ -68,15 +68,15 @@
     "prefer-stable": true,
     "archive": {
         "exclude": [
+            "/.assets",
+            "/.docker",
             "/.github",
             "/tests",
-            ".codacy.yml",
             ".codecov.yml",
-            "CHANGELOG.md",
             "codeception.yml",
+            "docker-compose.yml",
             "phpcs.xml.dist",
             "phpstan.neon.dist",
-            "phpunit.xml.dist",
             "psalm.xml.dist"
         ]
     }
