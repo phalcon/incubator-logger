@@ -1,5 +1,5 @@
 name: "Validations"
-on: [push, pull_request]
+on: [ push, pull_request ]
 jobs:
   validate-code-style:
     name: PSR-12 Code style
@@ -37,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ['7.4', '8.0', '8.1', '8.2']
+        php-versions: [ '7.4', '8.0', '8.1', '8.2' ]
 
     steps:
       - name: Checkout the code
