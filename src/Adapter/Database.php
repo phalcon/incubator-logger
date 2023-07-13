@@ -16,7 +16,6 @@ namespace Phalcon\Incubator\Logger\Adapter;
 use Phalcon\Db\Adapter\AbstractAdapter as DbAbstractAdapter;
 use Phalcon\Db\Column;
 use Phalcon\Logger\Adapter\AbstractAdapter;
-use Phalcon\Logger\Adapter\AdapterInterface;
 use Phalcon\Logger\Item;
 
 /**
@@ -26,32 +25,23 @@ use Phalcon\Logger\Item;
  */
 class Database extends AbstractAdapter
 {
-    /**
-     * @var DbAbstractAdapter
-     */
-    protected $db;
+    protected DbAbstractAdapter $db;
+
+    protected string $name;
+
+    protected string $tableName;
 
     /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string
-     */
-    protected $tableName;
-
-    /**
-     * Class constructor.
+     * Database adapter constructor.
      *
-     * @param string $name
      * @param DbAbstractAdapter $db
+     * @param string $name
      * @param string $tableName
      */
     public function __construct(DbAbstractAdapter $db, string $name, string $tableName)
     {
-        $this->db = $db;
-        $this->name = $name;
+        $this->db        = $db;
+        $this->name      = $name;
         $this->tableName = $tableName;
     }
 
@@ -59,8 +49,6 @@ class Database extends AbstractAdapter
      * Closes DB connection
      *
      * Do nothing, DB connection close can't be done here.
-     *
-     * @return bool
      */
     public function close(): bool
     {
@@ -69,10 +57,8 @@ class Database extends AbstractAdapter
 
     /**
      * Opens DB Transaction
-     *
-     * @return AdapterInterface
      */
-    public function begin(): AdapterInterface
+    public function begin(): self
     {
         $this->db->begin();
 
@@ -81,10 +67,8 @@ class Database extends AbstractAdapter
 
     /**
      * Commit transaction
-     *
-     * @return AdapterInterface
      */
-    public function commit(): AdapterInterface
+    public function commit(): self
     {
         $this->db->commit();
 
@@ -92,12 +76,9 @@ class Database extends AbstractAdapter
     }
 
     /**
-     * Rollback transaction
-     * (happens automatically if commit never reached)
-     *
-     * @return AdapterInterface
+     * Rollback transaction (happens automatically if commit never reached)
      */
-    public function rollback(): AdapterInterface
+    public function rollback(): self
     {
         $this->db->rollback();
 
@@ -106,8 +87,6 @@ class Database extends AbstractAdapter
 
     /**
      * Writes the log into DB table
-     *
-     * @param Item $item
      */
     public function process(Item $item): void
     {
@@ -115,9 +94,9 @@ class Database extends AbstractAdapter
             'INSERT INTO ' . $this->tableName . ' VALUES (null, ?, ?, ?, ?)',
             [
                 $this->name,
-                $item->getType(),
+                $item->getLevel(),
                 $this->getFormatter()->format($item),
-                $item->getTime(),
+                $item->getDateTime()->getTimestamp(),
             ],
             [
                 Column::BIND_PARAM_STR,

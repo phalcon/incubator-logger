@@ -18,7 +18,7 @@ You can make it inside AWS console.
 ```php
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Phalcon\Incubator\Logger\Adapter\CloudWatch;
-use Phalcon\Logger;
+use Phalcon\Logger\Logger;
 
 $di->set(
     'logger',
@@ -34,9 +34,7 @@ $di->set(
 
         $adapter = new CloudWatch($client, '/group/name', 'stream-name');
 
-        return new Logger('messages', [
-            'main' => $adapter,
-        ]);
+        return new Logger('messages', ['main' => $adapter]);
     }
 );
 ```
@@ -61,8 +59,9 @@ $di->set(
             ]
         );
 
-        $logsName = 'errors';
+        $logsName  = 'errors';
         $tableName = 'logs';
+
         return new DbLogger($connection, $logsName, $tableName);
     }
 );
@@ -97,4 +96,33 @@ $di->set(
         return new UdpLogger('errors', $host, $port);
     }
 );
+```
+
+## Slack logger
+
+Adapter to write messages into a Slack channel
+
+![slack-log](.assets/slack-log.png)
+
+```php
+$adapter = new \Phalcon\Incubator\Logger\Adapter\Slack('api-token','channel-name');
+
+$logger = new \Phalcon\Logger\Logger('logger-name', ['main-slack' => $adapter]);
+$logger->info('Information message to log in the channel channel-name');
+```
+
+### Creating an application in Slack API
+
+Access this [page](https://api.slack.com/apps) to create an `application` (after choosing/creating a workspace)
+
+### Giving rights to post messages
+Go to `Features > OAuth & Permissions` and in the `Scopes` section -> `Add an oauth scope` and select the following rights :
+
+- chat:write
+- chat:write.public
+
+### Get the token
+You can now generate a token for your bot/user in the `Install App` section which looks something like this :
+```
+xoxp-1111111-22222222-33333333-aaaaaaaaaaaaaaaaaaaaaa
 ```

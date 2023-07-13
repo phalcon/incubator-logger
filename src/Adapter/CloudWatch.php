@@ -15,7 +15,6 @@ namespace Phalcon\Incubator\Logger\Adapter;
 
 use Aws\CloudWatchLogs\CloudWatchLogsClient;
 use Phalcon\Logger\Adapter\AbstractAdapter;
-use Phalcon\Logger\Adapter\AdapterInterface;
 use Phalcon\Logger\Item;
 
 /**
@@ -23,31 +22,22 @@ use Phalcon\Logger\Item;
  */
 class CloudWatch extends AbstractAdapter
 {
-    /**
-     * @var CloudWatchLogsClient
-     */
-    protected $client;
+    protected CloudWatchLogsClient $client;
 
     /**
      * Some kind of "folder" inside CloudWatch
-     *
-     * @var string
      */
-    protected $groupName;
+    protected string $groupName;
 
     /**
      * Some kind of "file" inside CloudWatch
-     *
-     * @var string
      */
-    protected $streamName;
+    protected string $streamName;
 
     /**
      * CloudWatch requires sequence token to add new logs with order.
-     *
-     * @var string|null
      */
-    private $sequenceToken = null;
+    private ?string $sequenceToken = null;
 
     /**
      * CloudWatch constructor.
@@ -56,13 +46,10 @@ class CloudWatch extends AbstractAdapter
      * @param string $groupName
      * @param string $streamName
      */
-    public function __construct(
-        CloudWatchLogsClient $client,
-        string $groupName,
-        string $streamName
-    ) {
-        $this->client = $client;
-        $this->groupName = $groupName;
+    public function __construct(CloudWatchLogsClient $client, string $groupName, string $streamName)
+    {
+        $this->client     = $client;
+        $this->groupName  = $groupName;
         $this->streamName = $streamName;
 
         $this->retrieveSequenceToken();
@@ -70,25 +57,20 @@ class CloudWatch extends AbstractAdapter
 
     /**
      * Processes the message in the adapter
-     *
-     * @param Item $item
      */
     public function process(Item $item): void
     {
         $formatterMessage = $this->getFormatter()->format($item);
-        if (is_array($formatterMessage)) {
-            $formatterMessage = var_export($formatterMessage, true);
-        }
 
         $args = [
-            'logGroupName' => $this->groupName,
+            'logGroupName'  => $this->groupName,
             'logStreamName' => $this->streamName,
-            'logEvents' => [
+            'logEvents'     => [
                 [
-                    'message' => $formatterMessage,
-                    'timestamp' => $item->getTime() * 1000,
-                ],
-            ],
+                    'message'   => $formatterMessage,
+                    'timestamp' => $item->getDateTime()->getTimestamp() * 1000
+                ]
+            ]
         ];
 
         if ($this->sequenceToken !== null) {
@@ -101,15 +83,13 @@ class CloudWatch extends AbstractAdapter
 
     /**
      * Commits the internal transaction
-     *
-     * @return AdapterInterface
      */
-    public function commit(): AdapterInterface
+    public function commit(): self
     {
         $args = [
-            'logGroupName' => $this->groupName,
+            'logGroupName'  => $this->groupName,
             'logStreamName' => $this->streamName,
-            'logEvents' => $this->queue,
+            'logEvents'     => $this->queue
         ];
 
         if ($this->sequenceToken !== null) {
@@ -118,7 +98,7 @@ class CloudWatch extends AbstractAdapter
 
         $response = $this->client->putLogEvents($args);
 
-        $this->queue = [];
+        $this->queue         = [];
         $this->inTransaction = false;
         $this->sequenceToken = $response->get('nextSequenceToken');
 
@@ -127,8 +107,6 @@ class CloudWatch extends AbstractAdapter
 
     /**
      * Closes the logger
-     *
-     * @return bool
      */
     public function close(): bool
     {
@@ -142,8 +120,8 @@ class CloudWatch extends AbstractAdapter
     {
         /** @var array $streams */
         $streams = $this->client->describeLogStreams([
-            'logGroupName' => $this->groupName,
-            'logStreamNamePrefix' => $this->streamName,
+            'logGroupName'        => $this->groupName,
+            'logStreamNamePrefix' => $this->streamName
         ])->get('logStreams');
 
         /**
