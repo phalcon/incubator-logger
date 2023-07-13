@@ -96,13 +96,13 @@ class Database extends AbstractAdapter
                 $this->name,
                 $item->getLevel(),
                 $this->getFormatter()->format($item),
-                $item->getDateTime()->getTimestamp()
+                $item->getDateTime()->getTimestamp(),
             ],
             [
                 Column::BIND_PARAM_STR,
                 Column::BIND_PARAM_INT,
                 Column::BIND_PARAM_STR,
-                Column::BIND_PARAM_INT
+                Column::BIND_PARAM_INT,
             ]
         );
     }
