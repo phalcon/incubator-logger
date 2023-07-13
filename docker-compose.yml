@@ -18,3 +18,9 @@ services:
     working_dir: /app
     volumes:
       - .:/app
+
+  phalcon-logger-8.2:
+    build: docker/8.2
+    working_dir: /app
+    volumes:
+      - .:/app
