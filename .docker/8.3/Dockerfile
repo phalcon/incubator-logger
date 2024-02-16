@@ -1,8 +1,8 @@
 FROM composer:latest as composer
-FROM php:7.4-fpm
+FROM php:8.3-fpm
 
-ENV PHALCON_VERSION='5.2.2' \
-    PHP_VERSION='7.4'
+ENV PHALCON_VERSION='5.6.1' \
+    PHP_VERSION='8.3'
 
 RUN apt update -y && \
     apt install -y \

@@ -1,7 +1,7 @@
 FROM composer:latest as composer
 FROM php:8.2-fpm
 
-ENV PHALCON_VERSION='5.2.2' \
+ENV PHALCON_VERSION='5.6.1' \
     PHP_VERSION='8.2'
 
 RUN apt update -y && \
