@@ -39,7 +39,7 @@ class Slack extends AbstractAdapter
      */
     public const SLACK_URL = 'https://slack.com/api/chat.postMessage';
 
-    protected ?CurlHandle $curl = null;
+    protected false|CurlHandle $curl = false;
 
     /**
      * Slack adapter constructor managing to log content in a Slack channel
@@ -88,7 +88,8 @@ class Slack extends AbstractAdapter
      */
     public function close(): bool
     {
-        $this->curl = null;
+        unset($this->curl);
+        $this->curl = false;
 
         return true;
     }

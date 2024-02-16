@@ -22,18 +22,6 @@ use Phalcon\Logger\Item;
  */
 class CloudWatch extends AbstractAdapter
 {
-    protected CloudWatchLogsClient $client;
-
-    /**
-     * Some kind of "folder" inside CloudWatch
-     */
-    protected string $groupName;
-
-    /**
-     * Some kind of "file" inside CloudWatch
-     */
-    protected string $streamName;
-
     /**
      * CloudWatch requires sequence token to add new logs with order.
      */
@@ -42,16 +30,14 @@ class CloudWatch extends AbstractAdapter
     /**
      * CloudWatch constructor.
      *
-     * @param CloudWatchLogsClient $client
-     * @param string $groupName
-     * @param string $streamName
+     * @param string $groupName Some kind of "folder" inside CloudWatch
+     * @param string $streamName Some kind of "file" inside CloudWatch
      */
-    public function __construct(CloudWatchLogsClient $client, string $groupName, string $streamName)
-    {
-        $this->client     = $client;
-        $this->groupName  = $groupName;
-        $this->streamName = $streamName;
-
+    public function __construct(
+        protected CloudWatchLogsClient $client,
+        protected string $groupName,
+        protected string $streamName
+    ) {
         $this->retrieveSequenceToken();
     }
 

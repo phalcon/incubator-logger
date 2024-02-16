@@ -35,6 +35,6 @@ class SlackTest extends \Codeception\Test\Unit
         $property = new ReflectionProperty($adapter, 'curl');
         $property->setAccessible(true);
 
-        $this->assertNull($property->getValue($adapter));
+        $this->assertFalse($property->getValue($adapter));
     }
 }
