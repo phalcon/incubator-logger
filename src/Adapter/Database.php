@@ -25,24 +25,14 @@ use Phalcon\Logger\Item;
  */
 class Database extends AbstractAdapter
 {
-    protected DbAbstractAdapter $db;
-
-    protected string $name;
-
-    protected string $tableName;
-
     /**
      * Database adapter constructor.
-     *
-     * @param DbAbstractAdapter $db
-     * @param string $name
-     * @param string $tableName
      */
-    public function __construct(DbAbstractAdapter $db, string $name, string $tableName)
-    {
-        $this->db        = $db;
-        $this->name      = $name;
-        $this->tableName = $tableName;
+    public function __construct(
+        protected DbAbstractAdapter $db,
+        protected string $name,
+        protected string $tableName
+    ) {
     }
 
     /**
