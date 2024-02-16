@@ -30,7 +30,7 @@
         "forum": "https://forum.phalcon.io"
     },
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.0",
         "ext-phalcon": "^5.0",
         "ext-json": "*"
     },
@@ -51,7 +51,7 @@
     },
     "config": {
         "platform": {
-            "php": "7.4"
+            "php": "8.0"
         }
     },
     "autoload": {
