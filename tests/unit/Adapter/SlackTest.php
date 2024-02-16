@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Phalcon\Incubator\Logger\Tests\Unit\Adapter;
 
+use CurlHandle;
 use Phalcon\Incubator\Logger\Adapter\Slack;
 use Phalcon\Logger\Adapter\AbstractAdapter;
 use ReflectionProperty;
@@ -30,11 +31,12 @@ class SlackTest extends \Codeception\Test\Unit
     {
         $adapter = new Slack('token', 'channel');
 
-        $this->assertTrue($adapter->close());
-
         $property = new ReflectionProperty($adapter, 'curl');
         $property->setAccessible(true);
 
-        $this->assertFalse($property->getValue($adapter));
+        $this->assertInstanceOf(CurlHandle::class, $property->getValue($adapter));
+
+        $this->assertTrue($adapter->close());
+        $this->assertNull($property->getValue($adapter));
     }
 }

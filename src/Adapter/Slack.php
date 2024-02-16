@@ -39,7 +39,7 @@ class Slack extends AbstractAdapter
      */
     public const SLACK_URL = 'https://slack.com/api/chat.postMessage';
 
-    protected false|CurlHandle $curl = false;
+    protected ?CurlHandle $curl = null;
 
     /**
      * Slack adapter constructor managing to log content in a Slack channel
@@ -88,8 +88,7 @@ class Slack extends AbstractAdapter
      */
     public function close(): bool
     {
-        unset($this->curl);
-        $this->curl = false;
+        $this->curl = null;
 
         return true;
     }
@@ -108,7 +107,7 @@ class Slack extends AbstractAdapter
 
         if (!function_exists('curl_init')) {
             throw new Exception('cURL extension is not enabled');
-        } elseif (!$this->curl = curl_init(self::SLACK_URL)) {
+        } elseif (!$this->curl = (curl_init(self::SLACK_URL) ?: null)) {
             throw new Exception('curl_init() returned false');
         }
     }
