@@ -15,6 +15,7 @@ namespace Phalcon\Incubator\Logger\Tests\Unit\Adapter;
 
 use Phalcon\Incubator\Logger\Adapter\Slack;
 use Phalcon\Logger\Adapter\AbstractAdapter;
+use ReflectionProperty;
 
 class SlackTest extends \Codeception\Test\Unit
 {
@@ -30,5 +31,10 @@ class SlackTest extends \Codeception\Test\Unit
         $adapter = new Slack('token', 'channel');
 
         $this->assertTrue($adapter->close());
+
+        $property = new ReflectionProperty($adapter, 'curl');
+        $property->setAccessible(true);
+
+        $this->assertNull($property->getValue($adapter));
     }
 }
