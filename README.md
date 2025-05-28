@@ -16,7 +16,7 @@ composer require phalcon/incubator-logger
 
 ## Amazon CloudWatch
 
-Adapter to store logs in AWS ClodWatch:
+Adapter to store logs in AWS CloudWatch:
 
 Note: group name and stream name must be created before call any logs.
 You can make it inside AWS console. 
