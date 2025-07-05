@@ -15,28 +15,21 @@ namespace Phalcon\Incubator\Logger\Adapter;
 
 use Phalcon\Logger\Adapter\AbstractAdapter;
 use Phalcon\Logger\Item;
+use Socket;
+
+use function register_shutdown_function;
+use function socket_close;
+use function json_encode;
+use function socket_create;
+use function socket_sendto;
+use function strlen;
 
 /**
  * Sends messages using UDP protocol to external server
  */
 class Udp extends AbstractAdapter
 {
-    /**
-     * Name
-     */
-    protected string $name = 'phalcon';
-
-    /**
-     * IP address of the remote host.
-     */
-    protected string $host;
-
-    protected int $port;
-
-    /**
-     * @var resource|false
-     */
-    protected $socket = false;
+    protected false|Socket $socket = false;
 
     /**
      * Storage for holding all messages until they are ready to be sent to server.
@@ -46,16 +39,15 @@ class Udp extends AbstractAdapter
     /**
      * Class constructor.
      *
-     * @param string $name
-     * @param string $host
+     * @param string $name Name
+     * @param string $host IP address of the remote host
      * @param int $port
      */
-    public function __construct(string $name, string $host, int $port)
-    {
-        $this->name = $name;
-        $this->host = $host;
-        $this->port = $port;
-
+    public function __construct(
+        protected string $name,
+        protected string $host,
+        protected int $port
+    ) {
         register_shutdown_function([$this, 'commit']);
         register_shutdown_function([$this, 'close']);
     }

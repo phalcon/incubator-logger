@@ -13,34 +13,33 @@ declare(strict_types=1);
 
 namespace Phalcon\Incubator\Logger\Adapter;
 
+use CurlHandle;
 use Phalcon\Logger\AbstractLogger;
 use Phalcon\Logger\Adapter\AbstractAdapter;
 use Phalcon\Logger\Item;
 use Phalcon\Logger\Exception;
 
+use function function_exists;
+use function curl_init;
+use function curl_setopt_array;
+use function json_encode;
+use function curl_exec;
+
 /**
  * Logger adapter to log messages into a Slack channel
  *
- * Uses the Slack API to write the logged message
+ * Uses the Slack API to post the logged message
  *
  * @see https://api.slack.com/methods/chat.postMessage
  */
 class Slack extends AbstractAdapter
 {
     /**
-     * @var resource
+     * Slack endpoint url to post a message
      */
-    protected $curl;
+    public const SLACK_URL = 'https://slack.com/api/chat.postMessage';
 
-    /**
-     * API token
-     */
-    protected string $token;
-
-    /**
-     * Slack channel name
-     */
-    protected string $channel;
+    protected ?CurlHandle $curl = null;
 
     /**
      * Slack adapter constructor managing to log content in a Slack channel
@@ -48,15 +47,13 @@ class Slack extends AbstractAdapter
      * @param string $token Required token for the API
      * @param string $channel Channel name to write the message
      *
-     * @throws Exception If curl_init returned false
+     * @throws Exception If cURL extension is not loaded/curl_init returned false
      */
-    public function __construct(string $token, string $channel)
-    {
-        if (!function_exists('curl_init')) {
-            throw new Exception('curl extension is not enabled');
-        } elseif (!$this->curl = curl_init('https://slack.com/api/chat.postMessage')) {
-            throw new Exception('curl_init() returned false');
-        }
+    public function __construct(
+        protected string $token,
+        protected string $channel
+    ) {
+        $this->curlInit();
 
         $this->token   = $token;
         $this->channel = $channel;
@@ -67,6 +64,9 @@ class Slack extends AbstractAdapter
      */
     public function process(Item $item): void
     {
+        // Curl instance might be closed
+        $this->curlInit();
+
         curl_setopt_array($this->curl, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POSTFIELDS     => [
@@ -84,15 +84,32 @@ class Slack extends AbstractAdapter
     }
 
     /**
-     * Closes the cURL connection
+     * Destroys the cURL instance
      */
     public function close(): bool
     {
-        if (gettype($this->curl) === 'resource') {
-            curl_close($this->curl);
-        }
+        $this->curl = null;
 
         return true;
+    }
+
+    /**
+     * Creates the CurlHandle instance
+     *
+     * @throws Exception If cURL extension is not loaded/curl_init returned false
+     */
+    protected function curlInit(): void
+    {
+        // Doesn't need to create the instance if already created
+        if ($this->curl) {
+            return;
+        }
+
+        if (!function_exists('curl_init')) {
+            throw new Exception('cURL extension is not enabled');
+        } elseif (!$this->curl = (curl_init(self::SLACK_URL) ?: null)) {
+            throw new Exception('curl_init() returned false');
+        }
     }
 
     /**
